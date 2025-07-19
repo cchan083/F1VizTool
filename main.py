@@ -115,90 +115,91 @@ def main():
         
     ])
     
+    try:
+        session = get_data(
+            year=inputs['year'],
+            grand_prix=inputs['grand_prix'],
+            session=inputs['session_type']
+        )
+        
+        
+        all_drivers = [inputs['driver'], inputs['second_driver'], inputs['third_driver']]
+        all_drivers = [x for x in all_drivers if x not in [None, '', [], {}, ()]]
+        
+        preprocessed_data = None
+        telemetry_concat = None
+        
+        if len(all_drivers) == 1:
+            
+            
+            dataframe, results  = session.get_session_data(drivers=all_drivers)
+            preprocessed_data = pd.DataFrame(dataframe)
+            preprocessed_data = preprocess_driver_lap(preprocessed_data)
+            
+            telemetry_data = session.data_preprocessing(dataframe)
+            telemetry_data = session.get_telemetry(lap_number=inputs['lap_number'],
+                                                data=telemetry_data,
+                                                fastest=inputs['fastest_lap'])
+            
+            telemetry_concat = telemetry_data
+            
+        elif len(all_drivers) == 2:
+            
+            dataframe, dataframe_2, results = session.get_session_data(drivers=all_drivers)
 
-    session = get_data(
-        year=inputs['year'],
-        grand_prix=inputs['grand_prix'],
-        session=inputs['session_type']
-    )
-    
-    
-    all_drivers = [inputs['driver'], inputs['second_driver'], inputs['third_driver']]
-    all_drivers = [x for x in all_drivers if x not in [None, '', [], {}, ()]]
-    
-    preprocessed_data = None
-    telemetry_concat = None
-    
-    if len(all_drivers) == 1:
-        
-        
-        dataframe, results  = session.get_session_data(drivers=all_drivers)
-        preprocessed_data = pd.DataFrame(dataframe)
-        preprocessed_data = preprocess_driver_lap(preprocessed_data)
-        
-        telemetry_data = session.data_preprocessing(dataframe)
-        telemetry_data = session.get_telemetry(lap_number=inputs['lap_number'],
-                                               data=telemetry_data,
-                                               fastest=inputs['fastest_lap'])
-        
-        telemetry_concat = telemetry_data
-        
-    elif len(all_drivers) == 2:
-        
-        dataframe, dataframe_2, results = session.get_session_data(drivers=all_drivers)
+            telemetry_data = session.data_preprocessing(dataframe)
+            telemetry_data = pd.DataFrame(session.get_telemetry(lap_number=inputs['lap_number'],
+                                                data=telemetry_data,
+                                                fastest=inputs['fastest_lap']))  
+            telemetry_data_2 = session.data_preprocessing(dataframe_2)
+            telemetry_data_2 = pd.DataFrame(session.get_telemetry(lap_number=inputs['lap_number'],
+                                                data=telemetry_data_2,
+                                                fastest=inputs['fastest_lap']))
+            telemetry_data_2 = telemetry_data_2.rename(columns={"Throttle":"Driver 2 Throttle", "Speed":"Driver 2 Speed", "Distance":"Driver 2 Distance"})
+            telemetry_data = telemetry_data.rename(columns={"Throttle":"Driver 1 Throttle", "Speed":"Driver 1 Speed"})
+            telemetry_concat = pd.concat([telemetry_data, telemetry_data_2], axis=1)
+            
+            dataframe=pd.DataFrame(dataframe)
+            dataframe_2=pd.DataFrame(dataframe_2)
+            dataframe_laps = pd.merge(dataframe, dataframe_2, on='LapNumber')
+            
+            preprocessed_data = preprocess_drivers_laps(dataframe_laps)
+            
+            
+        elif len(all_drivers) == 3:
+            
+            dataframe, dataframe_2, dataframe_3, results = session.get_session_data(drivers=all_drivers)
 
-        telemetry_data = session.data_preprocessing(dataframe)
-        telemetry_data = pd.DataFrame(session.get_telemetry(lap_number=inputs['lap_number'],
-                                               data=telemetry_data,
-                                               fastest=inputs['fastest_lap']))  
-        telemetry_data_2 = session.data_preprocessing(dataframe_2)
-        telemetry_data_2 = pd.DataFrame(session.get_telemetry(lap_number=inputs['lap_number'],
-                                               data=telemetry_data_2,
-                                               fastest=inputs['fastest_lap']))
-        telemetry_data_2 = telemetry_data_2.rename(columns={"Throttle":"Driver 2 Throttle", "Speed":"Driver 2 Speed", "Distance":"Driver 2 Distance"})
-        telemetry_data = telemetry_data.rename(columns={"Throttle":"Driver 1 Throttle", "Speed":"Driver 1 Speed"})
-        telemetry_concat = pd.concat([telemetry_data, telemetry_data_2], axis=1)
-        
-        dataframe=pd.DataFrame(dataframe)
-        dataframe_2=pd.DataFrame(dataframe_2)
-        dataframe_laps = pd.merge(dataframe, dataframe_2, on='LapNumber')
-        
-        preprocessed_data = preprocess_drivers_laps(dataframe_laps)
-        
-        
-    elif len(all_drivers) == 3:
-        
-        dataframe, dataframe_2, dataframe_3, results = session.get_session_data(drivers=all_drivers)
+            telemetry_data = session.data_preprocessing(dataframe)
+            telemetry_data = session.get_telemetry(lap_number=inputs['lap_number'],
+                                                data=telemetry_data,
+                                                fastest=inputs['fastest_lap'])  
+            telemetry_data_2 = session.data_preprocessing(dataframe_2)
+            telemetry_data_2 = session.get_telemetry(lap_number=inputs['lap_number'],
+                                                data=telemetry_data_2,
+                                                fastest=inputs['fastest_lap'])
+            telemetry_data_3 = session.data_preprocessing(dataframe_3)
+            telemetry_data_3 = session.get_telemetry(lap_number=inputs['lap_number'],
+                                                data=telemetry_data_3,
+                                                fastest=inputs['fastest_lap'])
+            
+            telemetry_data_3 = telemetry_data_3.rename(columns={"Throttle":"Driver 3 Throttle", "Speed":"Driver 3 Speed", "Distance":"Driver 3 Distance"})
+            telemetry_data_2 = telemetry_data_2.rename(columns={"Throttle":"Driver 2 Throttle", "Speed":"Driver 2 Speed", "Distance":"Driver 2 Distance"})
+            telemetry_data = telemetry_data.rename(columns={"Throttle":"Driver 1 Throttle", "Speed":"Driver 1 Speed"})
+            
+            telemetry_concat = pd.concat([telemetry_data, telemetry_data_2, telemetry_data_3], axis=1)
+            
+            
+            dataframe=pd.DataFrame(dataframe)
+            dataframe_2=pd.DataFrame(dataframe_2)
+            dataframe_3=pd.DataFrame(dataframe_3)
+            
+            dataframe = pd.merge(dataframe, dataframe_2, on='LapNumber', suffixes=("_x", "_y"))
+            dataframe_laps=pd.merge(dataframe, dataframe_3, on='LapNumber', suffixes=("_x", "_y", "_z"))
 
-        telemetry_data = session.data_preprocessing(dataframe)
-        telemetry_data = session.get_telemetry(lap_number=inputs['lap_number'],
-                                               data=telemetry_data,
-                                               fastest=inputs['fastest_lap'])  
-        telemetry_data_2 = session.data_preprocessing(dataframe_2)
-        telemetry_data_2 = session.get_telemetry(lap_number=inputs['lap_number'],
-                                               data=telemetry_data_2,
-                                               fastest=inputs['fastest_lap'])
-        telemetry_data_3 = session.data_preprocessing(dataframe_3)
-        telemetry_data_3 = session.get_telemetry(lap_number=inputs['lap_number'],
-                                               data=telemetry_data_3,
-                                               fastest=inputs['fastest_lap'])
-          
-        telemetry_data_3 = telemetry_data_3.rename(columns={"Throttle":"Driver 3 Throttle", "Speed":"Driver 3 Speed", "Distance":"Driver 3 Distance"})
-        telemetry_data_2 = telemetry_data_2.rename(columns={"Throttle":"Driver 2 Throttle", "Speed":"Driver 2 Speed", "Distance":"Driver 2 Distance"})
-        telemetry_data = telemetry_data.rename(columns={"Throttle":"Driver 1 Throttle", "Speed":"Driver 1 Speed"})
-        
-        telemetry_concat = pd.concat([telemetry_data, telemetry_data_2, telemetry_data_3], axis=1)
-        
-        
-        dataframe=pd.DataFrame(dataframe)
-        dataframe_2=pd.DataFrame(dataframe_2)
-        dataframe_3=pd.DataFrame(dataframe_3)
-        
-        dataframe = pd.merge(dataframe, dataframe_2, on='LapNumber', suffixes=("_x", "_y"))
-        dataframe_laps=pd.merge(dataframe, dataframe_3, on='LapNumber', suffixes=("_x", "_y", "_z"))
-
-        preprocessed_data = preprocess_3_drivers_laps(dataframe_laps)
-    
+            preprocessed_data = preprocess_3_drivers_laps(dataframe_laps)
+    except Exception as e:
+        print("Not a valid Grand Prix")
 
     
     
