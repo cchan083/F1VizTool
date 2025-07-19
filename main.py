@@ -64,19 +64,20 @@ def user_input():
     
     
     
-    
-    return {
-        'year': year,
-        'grand_prix': grand_prix,
-        'session_type': session_type,
-        'driver': driver,
-        'comparisons': comparisons,
-        'second_driver': second_driver,
-        'third_driver': third_driver,
-        'lap_number': lap_number,
-        'fastest_lap': fastest_lap
-    }
-
+    try:
+        return {
+            'year': year,
+            'grand_prix': grand_prix,
+            'session_type': session_type,
+            'driver': driver,
+            'comparisons': comparisons,
+            'second_driver': second_driver,
+            'third_driver': third_driver,
+            'lap_number': lap_number,
+            'fastest_lap': fastest_lap
+        }
+    except Exception as e:
+        print("GP has not yet been raced")
 
 def configure_tab_styles():
     st.markdown(f"""
