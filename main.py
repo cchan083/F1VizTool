@@ -43,25 +43,27 @@ def user_input():
         laps, drivers_unique = get_drivers(year, grand_prix, session_type)
         comparisons = st.sidebar.selectbox("Types of Comparisons", options=COMPARISON_TYPES)
         driver = st.sidebar.selectbox("Select Driver", options=drivers_unique)
+        second_driver, third_driver = None, None
+        if comparisons == "2 Drivers":
+            second_driver = st.sidebar.selectbox("Select Second Driver", options=drivers_unique)
+        elif comparisons == "3 Drivers":
+            second_driver = st.sidebar.selectbox("Select Second Driver", options=drivers_unique)
+            third_driver = st.sidebar.selectbox("Select Third Driver", options=drivers_unique)
+    
+        lap_number = st.sidebar.slider(
+            "Lap Number",
+            min_value=1,
+            max_value=int(laps),  
+            value=5  
+        )
+        fastest_lap = st.sidebar.checkbox("Fastest Lap")
+    
     except Exception as e:
         st.write("Invalid Inputs - Check that Grand Prix has finished and that the driver has driven it")
     
     
     
-    second_driver, third_driver = None, None
-    if comparisons == "2 Drivers":
-        second_driver = st.sidebar.selectbox("Select Second Driver", options=drivers_unique)
-    elif comparisons == "3 Drivers":
-        second_driver = st.sidebar.selectbox("Select Second Driver", options=drivers_unique)
-        third_driver = st.sidebar.selectbox("Select Third Driver", options=drivers_unique)
     
-    lap_number = st.sidebar.slider(
-        "Lap Number",
-        min_value=1,
-        max_value=int(laps),  
-        value=5  
-    )
-    fastest_lap = st.sidebar.checkbox("Fastest Lap")
     
     return {
         'year': year,
