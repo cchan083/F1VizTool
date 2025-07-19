@@ -196,40 +196,48 @@ def main():
     
     
     with lap_time_tab:
-        st.subheader("Lap Times Comparison")
-        st.line_chart(preprocessed_data,
-                      x="LapNumber")
+        try:
+            st.subheader("Lap Times Comparison")
+            st.line_chart(preprocessed_data,
+                        x="LapNumber")
+        except Exception as e:
+            st.write("Invalid Inputs - Check that Grand Prix has finished and that the driver has driven it")
+            
         
         
     with telemetry_tab:
-        st.subheader("Throttle Application")
-        
-        if len(all_drivers) == 1:
-            st.line_chart(
-        data=telemetry_concat,
-        x="Distance",
-        y="Throttle",
-        x_label="Distance (m)",
-        y_label="Throttle Application (%)",
-        width=1500,
-        height=400,
-        color=PRIMARY_COLOR
-        )
-            st.subheader("Speed")
-            st.line_chart(
-                data=telemetry_concat,
-                x="Distance",
-                y="Speed",
-                width=1500,
-                height=600,
-                color=PRIMARY_COLOR
+        try:
+                
+            st.subheader("Throttle Application")
+            
+            if len(all_drivers) == 1:
+                st.line_chart(
+            data=telemetry_concat,
+            x="Distance",
+            y="Throttle",
+            x_label="Distance (m)",
+            y_label="Throttle Application (%)",
+            width=1500,
+            height=400,
+            color=PRIMARY_COLOR
             )
-        
-        elif len(all_drivers) == 2:
-            throttle_chart_2(telemetry_concat=telemetry_concat)
-        
-        elif len(all_drivers) ==3:
-            throttle_chart_3(telemetry_concat=telemetry_concat)
+                st.subheader("Speed")
+                st.line_chart(
+                    data=telemetry_concat,
+                    x="Distance",
+                    y="Speed",
+                    width=1500,
+                    height=600,
+                    color=PRIMARY_COLOR
+                )
+            
+            elif len(all_drivers) == 2:
+                throttle_chart_2(telemetry_concat=telemetry_concat)
+            
+            elif len(all_drivers) ==3:
+                throttle_chart_3(telemetry_concat=telemetry_concat)
+        except Exception as e:
+            st.write("Invalid Inputs - Check that Grand Prix has finished and that the driver has driven it")
         
         
         
