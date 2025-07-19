@@ -41,12 +41,11 @@ def user_input():
     
     try:
         laps, drivers_unique = get_drivers(year, grand_prix, session_type)
+        comparisons = st.sidebar.selectbox("Types of Comparisons", options=COMPARISON_TYPES)
+        driver = st.sidebar.selectbox("Select Driver", options=drivers_unique)
     except Exception as e:
         st.write("Invalid Inputs - Check that Grand Prix has finished and that the driver has driven it")
     
-    
-    comparisons = st.sidebar.selectbox("Types of Comparisons", options=COMPARISON_TYPES)
-    driver = st.sidebar.selectbox("Select Driver", options=drivers_unique)
     
     
     second_driver, third_driver = None, None
